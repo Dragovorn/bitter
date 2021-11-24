@@ -2,32 +2,20 @@ package common
 
 import (
 	"github.com/aws/aws-lambda-go/events"
-	"time"
 )
 
-type APIError struct {
-	Code int `json:"code"`
-	Name string `json:"name"`
-	Message string `json:"message"`
-	Timestamp time.Time `json:"timestamp"`
+func DatabaseError(err error) (events.APIGatewayProxyResponse, error) {
+	return Error("Database Error", "An internal database error has occurred! (uh oh)", err)
 }
 
-func DatabaseError() (events.APIGatewayProxyResponse, error) {
-	return PackageError(500, "Database Error", "An internal database error has occurred! (uh oh)")
-}
+// Error Will properly log an error with a message that technically doesn't matter (for now I hope)
+// However it will also email a specific mailing list to notify people of errors, so only use on
+// scary errors. If the method returns an error, and you've never had it actually error should probably
+// be logged with this method.
+func Error(name string, desc string, err error) (events.APIGatewayProxyResponse, error) {
+	response, _ := PackageResponse(500, name, desc)
 
-func PackageError(code int, name string, message string) (events.APIGatewayProxyResponse, error) {
-	return events.APIGatewayProxyResponse {
-		StatusCode: code,
-		Body: PrettyJsonString(Error(code, name, message)),
-	}, nil
-}
+	// TODO: Send an email to a mailing list
 
-func Error(code int, name string, message string) *APIError {
-	return &APIError{
-		Code: code,
-		Name: name,
-		Message: message,
-		Timestamp: time.Now(),
-	}
+	return response, err
 }
