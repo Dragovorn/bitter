@@ -16,7 +16,7 @@ export default class V1Stack extends sst.Stack {
                 },
             },
             routes: {
-                "POST /v1/users/register": "src/v1/users/register.go",
+                "POST /v1/users/register": "src/v1/endpoint/users/register.go",
             },
         });
 
