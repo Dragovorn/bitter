@@ -1,6 +1,14 @@
 package entity
 
-import "github.com/gofrs/uuid"
+import (
+    "github.com/gofrs/uuid"
+    "golang.org/x/crypto/bcrypt"
+)
+
+const (
+    UserVersion  = 1
+    PasswordCost = 10
+)
 
 type User struct {
 	UID uuid.UUID `json:"uuid" dynamo:"uid"`
@@ -9,4 +17,17 @@ type User struct {
 	Email string `json:"email" dynamo:"email"`
 	EmailVerified bool `json:"email_verified" dynamo:"email_verified"`
 	PasswordHash []byte `json:"-" dynamo:"password_hash"`
+}
+
+func NewUser(username string, email string, password string) *User {
+    uid, _ := uuid.NewV4()
+    passwordHash, _ := bcrypt.GenerateFromPassword([]byte(password), PasswordCost)
+
+    return &User {
+        UID: uid,
+        Version: UserVersion,
+        Username: username,
+        PasswordHash: passwordHash,
+        Email: email,
+    }
 }

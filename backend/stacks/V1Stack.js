@@ -6,13 +6,15 @@ export default class V1Stack extends sst.Stack {
     constructor(scope, id, props) {
         super(scope, id, props);
 
-        const { table } = props;
+        const { users_table } = props;
 
         // Create a HTTP API
         this.api = new sst.Api(this, "Api", {
             defaultFunctionProps: {
                 environment: {
-                    USERS_TABLE: table.users_table
+                    USERNAME_INDEX: "usernameIndex",
+                    EMAIL_ADDRESS: "shinobu@bitter.social",
+                    USERS_TABLE: users_table.tableName
                 },
             },
             routes: {
@@ -20,7 +22,7 @@ export default class V1Stack extends sst.Stack {
             },
         });
 
-        this.api.attachPermissions([table])
+        this.api.attachPermissions([users_table])
 
         // Show the endpoint in the output
         this.addOutputs({

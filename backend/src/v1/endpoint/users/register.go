@@ -3,12 +3,12 @@ package main
 import (
     "encoding/base64"
     "encoding/json"
+    "fmt"
     "github.com/aws/aws-lambda-go/events"
-    "github.com/aws/aws-lambda-go/lambda"
-    "github.com/gofrs/uuid"
-    "golang.org/x/crypto/bcrypt"
     "main/src/common"
-    "main/src/common/database"
+    "main/src/common/aws/email"
+    "main/src/common/bootstrap"
+    "main/src/common/users"
     v1 "main/src/v1"
     "main/src/v1/entity"
 )
@@ -43,26 +43,23 @@ func Handler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayProxyResp
 
     // TODO: Validate username & password against some policy I come up with
 
-    usersTable := database.UsersTable()
-
-    if n, err := usersTable.Scan().Index("usernameIndex").Filter("username = ?", submitted.Username).Count(); n > 0 {
+    if n, err := users.ByUsername().Filter("username = ?", submitted.Username).Count(); n > 0 {
        return common.PackageResponse(400, "Username Taken", "The username: " + submitted.Username + " is taken!")
     } else if err != nil {
         return common.DatabaseError(err)
     }
 
-    uid, _ := uuid.NewV4()
-    passwordHash, _ := bcrypt.GenerateFromPassword([]byte(submitted.Password), 10)
+    result := entity.NewUser(submitted.Username, submitted.Email, submitted.Password)
 
-    result := entity.User {
-        UID: uid,
-        Version: 1,
-        Username: submitted.Username,
-        PasswordHash: passwordHash,
-        Email: submitted.Email,
+    fmt.Println(result.Email)
+
+    if out, err := email.Send(email.To(result.Email), email.TextMessage("Hello, World!!!", "Hello " + result.Username + "!")); err != nil {
+        panic(err)
+    } else {
+        fmt.Println(out)
     }
 
-    if err := usersTable.Put(result).Run(); err != nil {
+    if err := users.New(result); err != nil {
         return common.DatabaseError(err)
     }
 
@@ -72,7 +69,5 @@ func Handler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayProxyResp
 }
 
 func main() {
-    database.Init(v1.GetConstants())
-
-    lambda.Start(Handler)
+    bootstrap.All(v1.GetConstants(), Handler)
 }

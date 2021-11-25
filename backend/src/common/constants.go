@@ -1,5 +1,8 @@
 package common
 
 type ConstantsProvider interface {
-    UsersTableName() string
+	UsersTable() string
+	UsernameIndex() string
+	Email() string
+	AWSRegion() string
 }
