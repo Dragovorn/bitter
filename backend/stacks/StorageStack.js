@@ -1,12 +1,12 @@
 import * as sst from "@serverless-stack/resources";
 
 export default class StorageStack extends sst.Stack {
-    table;
+    users_table;
 
     constructor(scope, id, props) {
         super(scope, id, props);
 
-        this.table = new sst.Table(this, "Users", {
+        this.users_table = new sst.Table(this, "Users", {
             fields: {
                 uid: sst.TableFieldType.STRING,
                 username: sst.TableFieldType.STRING,

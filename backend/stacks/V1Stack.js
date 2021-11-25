@@ -12,7 +12,7 @@ export default class V1Stack extends sst.Stack {
         this.api = new sst.Api(this, "Api", {
             defaultFunctionProps: {
                 environment: {
-                    TABLE_NAME: table.tableName
+                    USERS_TABLE: table.users_table
                 },
             },
             routes: {

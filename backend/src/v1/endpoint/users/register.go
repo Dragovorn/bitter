@@ -9,11 +9,12 @@ import (
     "golang.org/x/crypto/bcrypt"
     "main/src/common"
     "main/src/common/database"
+    v1 "main/src/v1"
     "main/src/v1/entity"
 )
 
 // Path: /v1/users/register
-// Function: Register User
+// Function Description: Registers a new User
 
 type SubmittedUser struct {
     Username string `json:"username"`
@@ -40,7 +41,11 @@ func Handler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayProxyResp
         return common.PackageResponse(400, "Bad Input", "Missing required data, username, password, email!")
     }
 
-    if n, err := database.Table().Scan().Index("usernameIndex").Filter("username = ?", submitted.Username).Count(); n > 0 {
+    // TODO: Validate username & password against some policy I come up with
+
+    usersTable := database.UsersTable()
+
+    if n, err := usersTable.Scan().Index("usernameIndex").Filter("username = ?", submitted.Username).Count(); n > 0 {
        return common.PackageResponse(400, "Username Taken", "The username: " + submitted.Username + " is taken!")
     } else if err != nil {
         return common.DatabaseError(err)
@@ -57,15 +62,17 @@ func Handler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayProxyResp
         Email: submitted.Email,
     }
 
-    if err := database.Table().Put(result).Run(); err != nil {
+    if err := usersTable.Put(result).Run(); err != nil {
         return common.DatabaseError(err)
     }
+
+    // TODO: Send a validation email to the user
 
     return common.PackageResponse(201, "Success", "Successfully created user: " + result.UID.String())
 }
 
 func main() {
-    database.Init()
+    database.Init(v1.GetConstants())
 
     lambda.Start(Handler)
 }

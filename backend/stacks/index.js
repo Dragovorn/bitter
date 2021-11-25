@@ -9,6 +9,6 @@ export default function main(app) {
 
     const storage = new StorageStack(app, "persist");
     new V1Stack(app, "v1", {
-        table: storage.table
+        users_table: storage.users_table
     });
 }
