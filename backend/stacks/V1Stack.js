@@ -8,24 +8,29 @@ export default class V1Stack extends sst.Stack {
 
         const {
             users,
+            validation,
             email,
-            email_address
+            email_address,
+            username_index,
+            user_id_index,
         } = props;
 
         // Create a HTTP API
         this.api = new sst.Api(this, "Api", {
             defaultFunctionProps: {
                 environment: {
-                    USERNAME_INDEX: "usernameIndex",
+                    USERNAME_INDEX: username_index,
+                    USER_ID_INDEX: user_id_index,
                     EMAIL_ADDRESS: email_address,
-                    USERS_TABLE: users.tableName
+                    USERS_TABLE: users.tableName,
+                    VALIDATION_TABLE: validation.tableName,
                 },
             },
             routes: {
                 "POST /v1/users/register": {
                     function: {
                         handler: "src/v1/endpoint/users/register.go",
-                        permissions: [users, email]
+                        permissions: [users, email, validation]
                     }
                 },
             },

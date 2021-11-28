@@ -3,13 +3,16 @@ package main
 import (
     "encoding/base64"
     "encoding/json"
+    "fmt"
     "github.com/aws/aws-lambda-go/events"
     "main/src/common"
     "main/src/common/aws/email"
     "main/src/common/bootstrap"
     "main/src/common/users"
+    "main/src/common/validation"
     v1 "main/src/v1"
     "main/src/v1/entity"
+    "strconv"
 )
 
 // Path: /v1/users/register
@@ -49,16 +52,25 @@ func Handler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayProxyResp
     }
 
     result := entity.NewUser(submitted.Username, submitted.Email, submitted.Password)
+    code := validation.NewCode(result.UID)
+
+    fmt.Println(common.Constants().ValidationTable())
 
     // TODO: Make this a validation email
-    message := email.TextMessage("Hello, World!!!", "Hello " + result.Username + "!")
+    if err := validation.New(code); err != nil {
+       return common.DatabaseError(err)
+    }
+
+    fmt.Println("Send email!")
+
+    message := email.TextMessage("Your validation code is: " + strconv.Itoa(code.Code), "Hello " + result.Username + "!")
 
     if _, err := email.Send(email.To(result.Email), message); err != nil {
-        return common.Error("Email failed!", "Could not send email!", err)
+       return common.Error("Email failed!", "Could not send email!", err)
     }
 
     if err := users.New(result); err != nil {
-        return common.DatabaseError(err)
+       return common.DatabaseError(err)
     }
 
     return common.PackageResponse(201, "Success", "Successfully created user: " + result.UID.String())

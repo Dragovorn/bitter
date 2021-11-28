@@ -23,10 +23,13 @@ export default function main(app) {
         runtime: "go1.x"
     });
 
-    const storage = new StorageStack(app, "persist");
+    const storage = new StorageStack(app, "data");
     new V1Stack(app, "v1", {
+        username_index: storage.username_index,
+        user_id_index: storage.user_id_index,
         users: storage.users_table,
         email_address: EMAIL_ADDRESS,
-        email: email_policy
+        email: email_policy,
+        validation: storage.validation_table
     });
 }

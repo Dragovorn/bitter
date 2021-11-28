@@ -7,16 +7,7 @@ import (
 )
 
 func New(user interface {}) error {
-    var val interface {}
-
-    switch user.(type) {
-    default:
-        val = user
-    case database.Serializable:
-        val = user.(database.Serializable).Serialize()
-    }
-
-    return Table().Put(val).Run()
+    return Table().Put(database.Serialize(user)).Run()
 }
 
 func ByUsername() *dynamo.Scan {

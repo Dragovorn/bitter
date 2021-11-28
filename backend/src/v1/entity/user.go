@@ -3,6 +3,7 @@ package entity
 import (
     "github.com/gofrs/uuid"
     "golang.org/x/crypto/bcrypt"
+    "time"
 )
 
 const (
@@ -17,6 +18,7 @@ type User struct {
 	Email string `json:"email" dynamo:"email"`
 	EmailVerified bool `json:"email_verified" dynamo:"email_verified"`
 	PasswordHash []byte `json:"-" dynamo:"password_hash"`
+    Created time.Time `json:"created" dynamo:"created_on"`
 }
 
 func NewUser(username string, email string, password string) *User {
@@ -29,5 +31,6 @@ func NewUser(username string, email string, password string) *User {
         Username: username,
         PasswordHash: passwordHash,
         Email: email,
+        Created: time.Now(),
     }
 }

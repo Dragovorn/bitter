@@ -20,6 +20,19 @@ func UsersTable() dynamo.Table {
 	return Table(common.Constants().UsersTable())
 }
 
+func ValidationTable() dynamo.Table {
+    return Table(common.Constants().ValidationTable())
+}
+
 func Table(name string) dynamo.Table {
 	return database.Table(name)
+}
+
+func Serialize(s interface {}) interface {} {
+    switch s.(type) {
+    default:
+        return s
+    case Serializable:
+        return s.(Serializable).Serialize()
+    }
 }
