@@ -25,8 +25,8 @@ export default function main(app) {
 
     const storage = new StorageStack(app, "persist");
     new V1Stack(app, "v1", {
-        users_table: storage.users_table,
+        users: storage.users_table,
         email_address: EMAIL_ADDRESS,
-        email_policy: email_policy
+        email: email_policy
     });
 }

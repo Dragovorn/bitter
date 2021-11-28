@@ -7,8 +7,8 @@ export default class V1Stack extends sst.Stack {
         super(scope, id, props);
 
         const {
-            users_table,
-            email_policy,
+            users,
+            email,
             email_address
         } = props;
 
@@ -18,18 +18,18 @@ export default class V1Stack extends sst.Stack {
                 environment: {
                     USERNAME_INDEX: "usernameIndex",
                     EMAIL_ADDRESS: email_address,
-                    USERS_TABLE: users_table.tableName
+                    USERS_TABLE: users.tableName
                 },
             },
             routes: {
-                "POST /v1/users/register": "src/v1/endpoint/users/register.go",
+                "POST /v1/users/register": {
+                    function: {
+                        handler: "src/v1/endpoint/users/register.go",
+                        permissions: [users, email]
+                    }
+                },
             },
         });
-
-        this.api.attachPermissions([
-            users_table,
-            email_policy
-        ])
 
         // Show the endpoint in the output
         this.addOutputs({
