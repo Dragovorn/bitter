@@ -7,7 +7,7 @@ import (
 
 var usersTableName = os.Getenv("USERS_TABLE")
 var usernameIndex = os.Getenv("USERNAME_INDEX")
-var email = os.Getenv("EMAIL")
+var email = os.Getenv("EMAIL_ADDRESS")
 var awsRegion = os.Getenv("AWS_REGION")
 var instance = Constants{}
 

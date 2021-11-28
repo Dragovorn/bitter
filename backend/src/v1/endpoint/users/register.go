@@ -3,7 +3,6 @@ package main
 import (
     "encoding/base64"
     "encoding/json"
-    "fmt"
     "github.com/aws/aws-lambda-go/events"
     "main/src/common"
     "main/src/common/aws/email"
@@ -51,19 +50,16 @@ func Handler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayProxyResp
 
     result := entity.NewUser(submitted.Username, submitted.Email, submitted.Password)
 
-    fmt.Println(result.Email)
+    // TODO: Make this a validation email
+    message := email.TextMessage("Hello, World!!!", "Hello " + result.Username + "!")
 
-    if out, err := email.Send(email.To(result.Email), email.TextMessage("Hello, World!!!", "Hello " + result.Username + "!")); err != nil {
-        panic(err)
-    } else {
-        fmt.Println(out)
+    if _, err := email.Send(email.To(result.Email), message); err != nil {
+        return common.Error("Email failed!", "Could not send email!", err)
     }
 
     if err := users.New(result); err != nil {
         return common.DatabaseError(err)
     }
-
-    // TODO: Send a validation email to the user
 
     return common.PackageResponse(201, "Success", "Successfully created user: " + result.UID.String())
 }
