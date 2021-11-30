@@ -7,4 +7,6 @@ type ConstantsProvider interface {
     UserIdIndex() string
 	Email() string
 	AWSRegion() string
+    ApiURL() string
+    BaseURL() string
 }

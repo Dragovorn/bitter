@@ -3,7 +3,6 @@ package main
 import (
     "encoding/base64"
     "encoding/json"
-    "fmt"
     "github.com/aws/aws-lambda-go/events"
     "main/src/common"
     "main/src/common/aws/email"
@@ -54,14 +53,9 @@ func Handler(request events.APIGatewayV2HTTPRequest) (events.APIGatewayProxyResp
     result := entity.NewUser(submitted.Username, submitted.Email, submitted.Password)
     code := validation.NewCode(result.UID)
 
-    fmt.Println(common.Constants().ValidationTable())
-
-    // TODO: Make this a validation email
     if err := validation.New(code); err != nil {
        return common.DatabaseError(err)
     }
-
-    fmt.Println("Send email!")
 
     message := email.TextMessage("Your validation code is: " + strconv.Itoa(code.Code), "Hello " + result.Username + "!")
 

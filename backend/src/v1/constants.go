@@ -11,6 +11,8 @@ var usernameIndex = os.Getenv("USERNAME_INDEX")
 var userIdIndex = os.Getenv("USER_ID_INDEX")
 var email = os.Getenv("EMAIL_ADDRESS")
 var awsRegion = os.Getenv("AWS_REGION")
+var apiURL = os.Getenv("API_URL")
+var baseURL = os.Getenv("BASE_URL")
 var instance = Constants{}
 
 func GetConstants() Constants {
@@ -43,4 +45,12 @@ func (c Constants) AWSRegion() string {
 
 func (c Constants) UserIdIndex() string {
     return userIdIndex
+}
+
+func (c Constants) ApiURL() string {
+    return apiURL
+}
+
+func (c Constants) BaseURL() string {
+    return baseURL
 }

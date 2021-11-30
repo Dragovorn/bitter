@@ -7,6 +7,9 @@ export default class V1Stack extends sst.Stack {
         super(scope, id, props);
 
         const {
+            hosted_zone,
+            api_url,
+            base_url,
             users,
             validation,
             email,
@@ -17,8 +20,15 @@ export default class V1Stack extends sst.Stack {
 
         // Create a HTTP API
         this.api = new sst.Api(this, "Api", {
+            customDomain: {
+                domainName: api_url,
+                hostedZone: hosted_zone,
+                path: "v1",
+            },
             defaultFunctionProps: {
                 environment: {
+                    API_URL: api_url,
+                    BASE_URL: base_url,
                     USERNAME_INDEX: username_index,
                     USER_ID_INDEX: user_id_index,
                     EMAIL_ADDRESS: email_address,
@@ -27,11 +37,17 @@ export default class V1Stack extends sst.Stack {
                 },
             },
             routes: {
-                "POST /v1/users/register": {
+                "GET /validate": {
                     function: {
-                        handler: "src/v1/endpoint/users/register.go",
+                        handler: "src/v1/endpoint/validate.go",
                         permissions: [users, email, validation]
                     }
+                },
+                "POST /users/register": {
+                    function: {
+                        handler: "src/v1/endpoint/users/register.go",
+                        permissions: [users, email, validation],
+                    },
                 },
             },
         });
