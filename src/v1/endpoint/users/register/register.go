@@ -8,7 +8,7 @@ import (
     "main/src/common/aws/email"
     "main/src/common/bootstrap"
     "main/src/common/users"
-    "main/src/common/validation"
+    "main/src/common/users/validation"
     v1 "main/src/v1"
     "main/src/v1/entity"
     "strconv"

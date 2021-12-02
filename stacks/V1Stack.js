@@ -37,15 +37,15 @@ export default class V1Stack extends sst.Stack {
                 },
             },
             routes: {
-                "GET /validate": {
+                "GET /users/{uid}/validate": {
                     function: {
-                        handler: "src/v1/endpoint/validate.go",
+                        handler: "src/v1/endpoint/users/validate/validate.go",
                         permissions: [users, email, validation]
                     }
                 },
                 "POST /users/register": {
                     function: {
-                        handler: "src/v1/endpoint/users/register.go",
+                        handler: "src/v1/endpoint/users/register/register.go",
                         permissions: [users, email, validation],
                     },
                 },
