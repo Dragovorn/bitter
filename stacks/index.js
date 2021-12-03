@@ -1,5 +1,6 @@
 import V1Stack from "./V1Stack";
 import StorageStack from "./StorageStack";
+import FrontendStack from "./FrontendStack";
 import * as iam from "@aws-cdk/aws-iam";
 
 export default function main(app) {
@@ -7,6 +8,7 @@ export default function main(app) {
     const API_URL = process.env.API_URL;
     const BASE_URL = process.env.BASE_URL;
     const EMAIL_ADDRESS = process.env.EMAIL_ADDRESS;
+    const REDIRECT_WWW = process.env.REDIRECT_WWW;
 
     const EMAIL_POLICY = new iam.PolicyStatement({
         actions: [
@@ -39,4 +41,12 @@ export default function main(app) {
         email: EMAIL_POLICY,
         validation: storage.validation_table,
     });
+
+    // Please make sure that frontend always gets deployed last
+
+    new FrontendStack(app, "frontend", {
+        hosted_zone: HOSTED_ZONE,
+        domain_name: BASE_URL,
+        redirect_www: REDIRECT_WWW,
+    })
 }
