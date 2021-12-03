@@ -15,7 +15,7 @@ export default class FrontendStack extends sst.Stack {
         this.fronend = new sst.StaticSite(this, "Frontend", {
             path: "frontend/",
             buildOutput: "dist",
-            buildCommand: "ng build --output-path dist",
+            buildCommand: "npm run prod",
             customDomain: redirect_www ? {
                 hostedZone: hosted_zone,
                 domainName: domain_name,

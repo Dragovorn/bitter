@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "preprod": "go run ../scripts/generate-env/main.go prod",
+    "prod": "ng build --output-path dist",
+    "predev": "go run ../scripts/generate-env/main.go dev",
+    "dev": "ng serve",
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
