@@ -9,32 +9,28 @@ export default class V1Stack extends sst.Stack {
         const {
             hosted_zone,
             api_url,
-            base_url,
             users,
             validation,
             email,
-            email_address,
             username_index,
             user_id_index,
         } = props;
 
-        // Create a HTTP API
+        this.setDefaultFunctionProps({
+            environment: {
+                USERNAME_INDEX: username_index,
+                USER_ID_INDEX: user_id_index,
+                USERS_TABLE: users.tableName,
+                VALIDATION_TABLE: validation.tableName,
+            }
+        })
+
+        // Create an HTTP API
         this.api = new sst.Api(this, "Api", {
             customDomain: {
                 domainName: api_url,
                 hostedZone: hosted_zone,
                 path: "v1",
-            },
-            defaultFunctionProps: {
-                environment: {
-                    API_URL: api_url,
-                    BASE_URL: base_url,
-                    USERNAME_INDEX: username_index,
-                    USER_ID_INDEX: user_id_index,
-                    EMAIL_ADDRESS: email_address,
-                    USERS_TABLE: users.tableName,
-                    VALIDATION_TABLE: validation.tableName,
-                },
             },
             routes: {
                 "GET /users/{uid}/validate": {

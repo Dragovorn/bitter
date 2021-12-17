@@ -1,4 +1,5 @@
 import * as sst from "@serverless-stack/resources";
+import {RemovalPolicy} from "@aws-cdk/core";
 
 export default class StorageStack extends sst.Stack {
     users_table;
@@ -19,10 +20,14 @@ export default class StorageStack extends sst.Stack {
                 partitionKey: "uid",
                 sortKey: "username",
             },
-            localIndexes: {
+            globalIndexes: {
                 usernameIndex: {
-                    sortKey: "username",
+                    partitionKey: "username",
+                    // sortKey: "username",
                 }
+            },
+            dynamodbTable: {
+                removalPolicy: RemovalPolicy.DESTROY
             }
         });
 
@@ -35,10 +40,8 @@ export default class StorageStack extends sst.Stack {
                 partitionKey: "code",
                 sortKey: "user_id"
             },
-            localIndexes: {
-                userIdIndex: {
-                    sortKey: "user_id"
-                }
+            dynamodbTable: {
+                removalPolicy: RemovalPolicy.DESTROY
             }
         });
 

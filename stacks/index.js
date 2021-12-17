@@ -4,6 +4,7 @@ import FrontendStack from "./FrontendStack";
 import * as iam from "@aws-cdk/aws-iam";
 
 export default function main(app) {
+
     const HOSTED_ZONE = process.env.HOSTED_ZONE;
     const API_URL = process.env.API_URL;
     const BASE_URL = process.env.BASE_URL;
@@ -25,7 +26,16 @@ export default function main(app) {
 
     // Set default runtime for all functions
     app.setDefaultFunctionProps({
-        runtime: "go1.x"
+        timeout: 20,
+        memorySize: 512,
+        runtime: "go1.x",
+        environment: {
+            HOSTED_ZONE: HOSTED_ZONE,
+            API_URL: API_URL,
+            BASE_URL: BASE_URL,
+            EMAIL_ADDRESS: EMAIL_ADDRESS,
+            REDIRECT_WWW: REDIRECT_WWW,
+        }
     });
 
     const storage = new StorageStack(app, "data");
@@ -33,11 +43,9 @@ export default function main(app) {
     new V1Stack(app, "v1", {
         hosted_zone: HOSTED_ZONE,
         api_url: API_URL,
-        base_url: BASE_URL,
         username_index: storage.username_index,
         user_id_index: storage.user_id_index,
         users: storage.users_table,
-        email_address: EMAIL_ADDRESS,
         email: EMAIL_POLICY,
         validation: storage.validation_table,
     });
