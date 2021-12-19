@@ -23,7 +23,6 @@ export default class StorageStack extends sst.Stack {
             globalIndexes: {
                 usernameIndex: {
                     partitionKey: "username",
-                    // sortKey: "username",
                 }
             },
             dynamodbTable: {
@@ -33,7 +32,7 @@ export default class StorageStack extends sst.Stack {
 
         this.validation_table = new sst.Table(this, "validation", {
             fields: {
-                code: sst.TableFieldType.NUMBER,
+                code: sst.TableFieldType.STRING,
                 user_id: sst.TableFieldType.STRING,
             },
             primaryIndex: {
@@ -45,6 +44,10 @@ export default class StorageStack extends sst.Stack {
             }
         });
 
-        this.user_content_bucket = new sst.Bucket(this, "user-content");
+        this.user_content_bucket = new sst.Bucket(this, "user-content", {
+            s3Bucket: {
+                removalPolicy: RemovalPolicy.DESTROY
+            }
+        });
     }
 }

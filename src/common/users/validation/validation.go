@@ -10,9 +10,17 @@ import (
 )
 
 type Code struct {
-	Code    int       `dynamo:"code"`
+	Code    string    `dynamo:"code"`
 	UserId  uuid.UUID `dynamo:"user_id"`
 	Created time.Time `dynamo:"created_on"`
+}
+
+func (c *Code) Formatted() string {
+	return c.Code[0:5] + "-" + c.Code[5:10] // debt, codes could theoretically be longer, consider rewriting to be dynamic
+}
+
+func AsURL(code *Code) string { // TODO: Change the URL return to the baseURL validate
+	return "" // TODO: Stub
 }
 
 func NewCode(user uuid.UUID) *Code {
@@ -23,10 +31,6 @@ func NewCode(user uuid.UUID) *Code {
 		UserId:  user,
 		Created: time.Now(),
 	}
-}
-
-func AsURL(code *Code) string { // TODO: Change the URL return to the baseURL validate
-	return "" // TODO: Stub
 }
 
 func New(v interface{}) error {

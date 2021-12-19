@@ -7,16 +7,14 @@ import (
 
 var constants ConstantsProvider
 
-func RandNumber(length int) int {
+func RandNumber(length int) string {
 	var resultStr string
 
 	for x := 0; x < length; x++ {
 		resultStr += strconv.Itoa(rand.Intn(9))
 	}
 
-	result, _ := strconv.Atoi(resultStr)
-
-	return result
+	return resultStr
 }
 
 func Constants() ConstantsProvider {

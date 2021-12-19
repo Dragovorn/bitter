@@ -8,7 +8,6 @@ import (
 	"main/src/common/users/validation"
 	v1 "main/src/v1"
 	"main/src/v1/entity"
-	"strconv"
 )
 
 // Path: /v1/users/register
@@ -50,7 +49,7 @@ func Run(context *request.LambdaContext) *request.LambdaHTTPResponse {
 		return request.DatabaseError(err)
 	}
 
-	message := email.TextMessage("Your validation code is: "+strconv.Itoa(code.Code), "Hello "+result.Username+"!")
+	message := email.TextMessage("Your validation code is: "+code.Formatted(), "Hello "+result.Username+"!")
 
 	if _, err := email.Send(email.To(result.Email), message); err != nil {
 		return request.ServerError("Could not send email!", err)

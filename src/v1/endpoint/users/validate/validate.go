@@ -5,6 +5,7 @@ import (
 	"main/src/common/bootstrap"
 	"main/src/common/request"
 	"main/src/common/users"
+	"main/src/common/users/validation"
 	v1 "main/src/v1"
 	"main/src/v1/entity"
 	"strconv"
@@ -27,17 +28,30 @@ func Run(context *request.LambdaContext) *request.LambdaHTTPResponse {
 		return request.DatabaseError(err)
 	}
 
-	var code int
-
 	codeStr := context.Query["code"]
 
-	if tCode, err := strconv.Atoi(codeStr); err != nil {
+	if _, err := strconv.Atoi(codeStr); err != nil {
 		return request.UserError("Unrecognized Integer", codeStr+" is not a number!")
-	} else {
-		code = tCode
 	}
 
-	return request.Response(200, "Hello", strconv.Itoa(code))
+	code := validation.Code{
+		Code: codeStr,
+	}
+
+	// TODO: Database error here: "Provided key element does not match the schema"
+	if err := validation.Table().Get("code", code.Code).One(&code); err != nil {
+		panic(err) // TODO: Handle more gracefully, just experiment with this error
+	}
+
+	// debt, this code block can probably be factored into the db query with some work
+	// this might also become necessary if codes collide.
+	if code.UserId != uid {
+		return request.UserError("Unrecognized Code", "Your validation code is unrecognized!")
+	}
+
+	// TODO: Some database shit
+
+	return request.Response(200, "Validated!", "You have successfully validated your account!")
 }
 
 func main() {
